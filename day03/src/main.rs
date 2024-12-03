@@ -16,18 +16,17 @@ fn main() {
     let caps: Vec<&str> = re.find_iter(&hay).map(|m| m.as_str()).collect();
 
     let mut sum = 0;
-
     let mut multiplication_enabled = true;
 
     for cap in &caps {
         if cap.contains("don") {
             multiplication_enabled = false;
-            println!("Multiplication Off!");
+            // println!("Multiplication Off!");
         } else if cap.contains("do") {
             multiplication_enabled = true;
-            println!("Multiplication On!");
+            // println!("Multiplication On!");
         } else if multiplication_enabled {
-            println!("{}", cap);
+            // println!("{}", cap);
             let (l, r) = cap.split_once(",").unwrap();
             let l: i32 = l
                 .chars()
