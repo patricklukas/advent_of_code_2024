@@ -1,13 +1,9 @@
 use regex::Regex;
-use std::fs::File;
-use std::io::prelude::*;
+use std::fs;
 
 fn main() {
-    // Load File
-    let mut hay = String::new();
-    let _ = File::open("./input.txt".to_string())
-        .unwrap()
-        .read_to_string(&mut hay);
+    // Load File to string
+    let hay = fs::read_to_string("./input.txt").expect("There has to be an input file");
 
     // Define Regex for valid mul instructions
     // Also match do() and don't()
