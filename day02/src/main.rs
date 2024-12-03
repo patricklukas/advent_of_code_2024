@@ -17,11 +17,6 @@ fn check_report(nums: Vec<i32>) -> i32 {
 
     let is_increasing = initial_diff > 0;
 
-    // 1 3 2 5 6
-    // 1 3 2 -> fallback
-    // 3 2 5
-    // 2 5 6 return 1
-
     // Iterate over adjacent pairs and check the conditions
     for window in nums.windows(2) {
         let diff = window[1] - window[0];
@@ -42,24 +37,30 @@ fn check_reports_with_removing(report: String) -> i32 {
         .map(|s| s.parse::<i32>().unwrap())
         .collect();
 
-    let mut valid_reports = 0;
-
+    // We don't have to check the whole report. It's enough to check only ones
+    // where one element has been removed.
+    // If one is valid, return 1, else 0
     for i in 0..nums.len() {
         let mut report = nums.clone();
         report.remove(i);
-        valid_reports += check_report(report)
+        // Found valid report
+        if check_report(report) > 0 {
+            return 1;
+        }
     }
 
-    std::cmp::min(1, valid_reports)
+    // No valid reports
+    0
 }
 
 fn main() {
     // Load File
     let file = File::open("./input.txt".to_string()).unwrap();
 
+    // Count valid reports
     let mut valid_reports: i32 = 0;
 
-    // Iterate over Lines
+    // Iterate over Lines in file
     for line in io::BufReader::new(file).lines().flatten() {
         valid_reports += check_reports_with_removing(line);
     }
