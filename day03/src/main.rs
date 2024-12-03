@@ -15,14 +15,14 @@ fn main() {
     let mut multiplication_enabled = true;
 
     for cap in &caps {
-        if cap.contains("don") {
+        // Capture the "n" in "don't()"
+        if cap.contains("n") {
             multiplication_enabled = false;
-            // println!("Multiplication Off!");
-        } else if cap.contains("do") {
+        // Capture the "d" in "do()"
+        } else if cap.contains("d") {
             multiplication_enabled = true;
-            // println!("Multiplication On!");
+        // Else it has to be "mul(l,r)"
         } else if multiplication_enabled {
-            // println!("{}", cap);
             let (l, r) = cap.split_once(",").unwrap();
             let l: i32 = l
                 .chars()
