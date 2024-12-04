@@ -65,9 +65,6 @@ fn main() {
     let ncol = input.lines().next().unwrap().chars().count();
     println!("Found {} rows and {} columns", nrow, ncol);
 
-    // This is a bit hacky, since I just looked up the num of lines and chars
-    // const NROW: usize = 140;
-    // const NCOL: usize = 140;
     let matrix: Vec<char> = input
         .chars()
         .filter(|c| *c == 'X' || *c == 'M' || *c == 'A' || *c == 'S')
@@ -154,8 +151,8 @@ fn main() {
                 matrix[idx(x + 2, y, ncol)]
             );
 
-            if (word_tlbr == "MAS" || word_tlbr.chars().rev().collect::<String>() == "MAS")
-                && (word_bltr == "MAS" || word_bltr.chars().rev().collect::<String>() == "MAS")
+            if (word_tlbr == "MAS" || word_tlbr == "SAM")
+                && (word_bltr == "MAS" || word_bltr == "SAM")
             {
                 cross_mas_count += 1;
             }
