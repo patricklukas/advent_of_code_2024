@@ -2,14 +2,11 @@ use std::cmp::Ordering;
 use std::collections::HashMap;
 use std::fs;
 
-// Implement a cmp method for Person
 fn page_order(a: &i32, b: &i32, map: &HashMap<i32, Vec<i32>>) -> Ordering {
-    if map.get(a).unwrap_or(&Vec::<i32>::new()).contains(b) {
-        Ordering::Less
-    } else if map.get(b).unwrap_or(&Vec::<i32>::new()).contains(a) {
-        Ordering::Greater
-    } else {
-        Ordering::Equal
+    match (map.get(a), map.get(b)) {
+        (Some(v_a), _) if v_a.contains(b) => Ordering::Less,
+        (_, Some(v_b)) if v_b.contains(a) => Ordering::Greater,
+        _ => Ordering::Equal,
     }
 }
 
@@ -19,25 +16,30 @@ fn main() {
 
     let (s_rules, s_queues) = input.split_once("\n\n").unwrap();
 
-    let mut rules = HashMap::<i32, Vec<i32>>::new();
-
-    for line in s_rules.lines() {
-        let (k, v) = line.split_once("|").unwrap();
-
-        rules
-            .entry(k.parse().unwrap())
-            .or_insert(Vec::<i32>::new())
-            .push(v.parse().unwrap());
-    }
+    let rules: HashMap<i32, Vec<i32>> = s_rules
+        .lines()
+        // Get all parseable lines as k, v pair
+        .filter_map(|line| {
+            let (k, v) = line.split_once('|')?;
+            let key = k.trim().parse().ok()?;
+            let value = v.trim().parse().ok()?;
+            Some((key, value))
+        })
+        // Fold all k, v pairs into an accumulator and store it
+        .fold(HashMap::new(), |mut acc, (k, v)| {
+            acc.entry(k).or_default().push(v);
+            acc
+        });
 
     let mut result_part_one = 0;
     let mut result_part_two = 0;
 
     for line in s_queues.lines() {
-        let mut queue = Vec::<i32>::new();
-        for page in line.split(",") {
-            queue.push(page.parse().unwrap());
-        }
+        let mut queue: Vec<i32> = line
+            .split(",")
+            .map(|page| page.trim().parse().unwrap())
+            .collect();
+
         if queue.is_sorted_by(|a, b| page_order(a, b, &rules) == Ordering::Less) {
             result_part_one += queue[queue.len() / 2];
         } else {
