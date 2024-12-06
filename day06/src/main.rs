@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use std::{collections::HashSet, fs};
 
 fn next_dir(x: i32, y: i32) -> (i32, i32) {
@@ -24,7 +25,12 @@ fn traverse(
 ) -> Option<HashSet<usize>> {
     let max_steps = map.len();
     let mut steps = 0;
-    let mut visited: HashSet<usize> = Default::default();
+    let mut visited: HashSet<usize>;
+    if get_visited {
+        visited = HashSet::with_capacity(max_steps);
+    } else {
+        visited = Default::default();
+    }
     let mut dir = (0, -1);
 
     loop {
@@ -37,7 +43,7 @@ fn traverse(
 
         let next_idx = idx(next_x as usize, next_y as usize, ncol);
 
-        match *map.get(next_idx).unwrap() {
+        match map[next_idx] {
             '#' => {
                 dir = next_dir(dir.0, dir.1);
             }
@@ -79,19 +85,22 @@ fn main() {
 
     let visited = traverse(guard_x, guard_y, map.clone(), ncol, nrow, true).unwrap_or_default();
 
-    let mut loops = 0;
+    let loops: usize = visited
+        .par_iter()
+        .map(|i| {
+            if *map.get(*i).unwrap() == '.' {
+                let mut new_map = map.clone();
+                new_map[*i] = '#';
 
-    for i in visited.iter() {
-        if *map.get(*i).unwrap() == '.' {
-            let mut new_map = map.clone();
-            new_map[*i] = '#';
-
-            match traverse(guard_x, guard_y, new_map, ncol, nrow, false) {
-                None => loops += 1,
-                _ => {}
+                match traverse(guard_x, guard_y, new_map, ncol, nrow, false) {
+                    None => 1,
+                    _ => 0,
+                }
+            } else {
+                0
             }
-        }
-    }
+        })
+        .sum();
 
     println!("Visited {:?} Positions", visited.len() + 1);
     println!(
