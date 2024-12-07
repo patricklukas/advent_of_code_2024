@@ -88,16 +88,12 @@ fn main() {
     let loops: usize = visited
         .par_iter()
         .map(|i| {
-            if *map.get(*i).unwrap() == '.' {
-                let mut new_map = map.clone();
-                new_map[*i] = '#';
+            let mut new_map = map.clone();
+            new_map[*i] = '#';
 
-                match traverse(guard_x, guard_y, new_map, ncol, nrow, false) {
-                    None => 1,
-                    _ => 0,
-                }
-            } else {
-                0
+            match traverse(guard_x, guard_y, new_map, ncol, nrow, false) {
+                None => 1,
+                _ => 0,
             }
         })
         .sum();
