@@ -52,22 +52,22 @@ fn main() {
             for &(o_x, o_y) in positions.iter() {
                 let (dx, dy) = (o_x - pos.0, o_y - pos.1);
 
-                // Direct antinodes at a distance of one "step" away from both antennas.
+                // Direct antinodes at a distance of one step away from both antennas.
                 try_insert(&mut antinodes, (o_x + dx, o_y + dy));
                 try_insert(&mut antinodes, (pos.0 - dx, pos.1 - dy));
 
-                // Reduce the direction vector (dx, dy) to its simplest form using gcd.
-                // This gives the direction step for the infinite line in part 2.
+                // Reduce the direction vector (dx, dy) to its simplest form using gcd
+                // This gives the direction step for the infinite line in part 2
                 let div = euclid_u32(dx.abs() as u32, dy.abs() as u32) as i32;
                 let step = (dx / div, dy / div);
 
-                // We consider both forward (step) and backward (-step) directions.
-                // We use an array and iterate over it to avoid code duplication.
+                // Consider both forward (step) and backward (-step) directions.
+                // Use an array and iterate over it to avoid code duplication.
                 [step, (-step.0, -step.1)]
                     .iter()
-                    .flat_map(|&st| line_points(pos, st)) // Generate points along each line
+                    .flat_map(|&st| line_points(pos, st)) // Generate points along each line for both directions
                     .for_each(|p| {
-                        antinodes_p2.insert(p); // Insert all these points into `antinodes_p2`
+                        antinodes_p2.insert(p);
                     });
             }
 
