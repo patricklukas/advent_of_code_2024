@@ -1,51 +1,27 @@
 use std::fs;
 use std::iter::repeat;
 
-fn part_1(files: &[i32], free: &[i32]) -> u64 {
-    let mut files = files.to_vec();
-    let free = free.to_vec();
+fn part_1(mut disk: Vec<usize>) -> u64 {
+    let mut l = 0;
+    let mut r = disk.len() - 1;
 
-    let mut fragmented = Vec::new();
-    let mut idx_last_file = files.len() - 1;
-
-    for (i, &free_block) in free.iter().enumerate() {
-        // Move out current file blocks
-        fragmented.extend(repeat(i).take(files[i] as usize));
-        files[i] = 0;
-
-        // Fill from the right with free space
-        let mut still_free = free_block;
-        while still_free > 0 && idx_last_file > 0 {
-            let file_size = files[idx_last_file];
-            if still_free >= file_size {
-                // Use up the entire last segment
-                fragmented.extend(repeat(idx_last_file).take(file_size as usize));
-                still_free -= file_size;
-                files[idx_last_file] = 0;
-
-                if idx_last_file == 0 {
-                    break;
-                }
-                idx_last_file -= 1;
-            } else {
-                // Partially fill with what's needed
-                fragmented.extend(repeat(idx_last_file).take(still_free as usize));
-                files[idx_last_file] -= still_free;
-                still_free = 0;
+    while l < r {
+        if disk[l] == 0 {
+            while l < r && disk[r] == 0 {
+                r -= 1;
             }
+            disk.swap(l, r);
         }
+        l += 1;
     }
 
-    fragmented
-        .iter()
+    disk.iter()
         .enumerate()
-        .map(|(pos, &file_id)| pos as u64 * file_id as u64)
+        .map(|(pos, &file_id)| (pos * (file_id.saturating_sub(1))) as u64)
         .sum()
 }
 
-fn part_2(files: &Vec<i32>, free: &Vec<i32>) -> u64 {
-    let mut files = files.clone();
-    let mut free = free.clone();
+fn part_2(mut files: Vec<i32>, mut free: Vec<i32>) -> u64 {
     let mut moved_files: Vec<Vec<(i32, i32)>> = vec![Vec::new(); files.len()];
 
     // Move files last to first
@@ -99,19 +75,29 @@ fn main() {
 
     let mut files = Vec::with_capacity(chars.len() / 2);
     let mut free = Vec::with_capacity(chars.len() / 2);
+    let mut disk = Vec::new();
 
     for (i, &c) in chars.iter().enumerate() {
         let num = c.to_digit(10).unwrap() as i32;
         if i % 2 == 0 {
             files.push(num);
+            // Add 1 to file idx so we don't confuse it with free space
+            disk.extend(repeat(i / 2 + 1).take(num as usize));
         } else {
             free.push(num);
+            disk.extend(repeat(0).take(num as usize));
         }
     }
-
     // Cheeky push of an empty free space so files and free are the same size
     free.push(0);
 
-    println!("Checksum Part 1: {:?}", part_1(&files, &free));
-    println!("Checksum Part 2: {:?}", part_2(&files, &free));
+    use std::time::Instant;
+
+    let now = Instant::now();
+    println!("Checksum Part 1: {:?}", part_1(disk));
+    println!("Took {:?}", now.elapsed());
+
+    let now = Instant::now();
+    println!("Checksum Part 2: {:?}", part_2(files, free));
+    println!("Took {:?}", now.elapsed());
 }
