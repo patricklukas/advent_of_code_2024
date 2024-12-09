@@ -108,6 +108,8 @@ fn main() {
             free.push(num);
         }
     }
+
+    // Cheeky push of an empty free space so files and free are the same size
     free.push(0);
 
     println!("Checksum Part 1: {:?}", part_1(&files, &free));
