@@ -27,7 +27,7 @@ fn part_2(mut data: Vec<(usize, usize)>) -> u64 {
     let mut idx = [0_usize; 10];
     let mut i = data.len() - 1;
 
-    while i > *idx.iter().min().unwrap() {
+    while i > idx[0] {
         // Look for data
         if data[i].0 != 0 {
             let size = data[i].1;
@@ -54,7 +54,7 @@ fn part_2(mut data: Vec<(usize, usize)>) -> u64 {
 }
 
 fn main() {
-    let input = fs::read_to_string("input").expect("There has to be an input file");
+    let input = fs::read_to_string("really_evil").expect("There has to be an input file");
     let chars: Vec<_> = input.trim().chars().collect();
 
     let mut disk = Vec::new();
