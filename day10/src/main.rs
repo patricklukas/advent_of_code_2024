@@ -4,8 +4,8 @@ use std::fs;
 use std::time::Instant;
 
 fn main() {
-    let now = Instant::now();
     let input = fs::read_to_string("input").expect("There has to be an input file");
+    let now = Instant::now();
     let map: Vec<u32> = input.chars().flat_map(|ch| ch.to_digit(10)).collect();
 
     // Input is square
