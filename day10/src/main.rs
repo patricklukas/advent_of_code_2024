@@ -6,10 +6,9 @@ use std::time::Instant;
 fn main() {
     let now = Instant::now();
     let input = fs::read_to_string("input").expect("There has to be an input file");
-
     let map: Vec<u32> = input.chars().flat_map(|ch| ch.to_digit(10)).collect();
 
-    // input is square
+    // Input is square
     let cols = (map.len() as f64).sqrt() as usize;
 
     let mut paths: HashMap<usize, usize> = HashMap::new();
@@ -34,19 +33,18 @@ fn dfs(
     peaks: &mut HashMap<usize, HashSet<usize>>,
     paths: &mut HashMap<usize, usize>,
 ) -> (usize, usize) {
-    // If we've already computed the reachable peaks for this index, return their count
-    if let Some(existing_peaks) = peaks.get(&i) {
-        return (existing_peaks.len(), paths[&i]);
+    // If already visited return
+    if let Some(&path) = paths.get(&i) {
+        return (1, path);
     }
 
-    // If this is a peak, create its entry and stop recursion
+    // If this is a peak, create entries and return
     if val == 9 {
         peaks.insert(i, HashSet::from([i]));
         paths.insert(i, 1);
         return (1, 1); // A peak contributes 1 to the score
     }
 
-    // Potential neighbors
     let neighbors = [
         i.checked_sub(1).filter(|_| i % cols > 0),
         i.checked_add(1).filter(|_| i % cols < cols - 1),
@@ -70,11 +68,9 @@ fn dfs(
             }
         }
     }
-
-    // Store reachable peaks for the current index
+    // Update visited maps
     peaks.insert(i, local_peaks);
     paths.insert(i, local_paths);
 
-    // Return the number of unique peaks reachable from this index
     (peaks[&i].len(), local_paths)
 }
