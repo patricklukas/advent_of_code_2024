@@ -8,7 +8,6 @@ fn blink(stones: HashMap<u64, u64>) -> HashMap<u64, u64> {
         let num = format!("{}", k);
         match k {
             0 => *new_stones.entry(1).or_default() += v,
-            1 => *new_stones.entry(2024).or_default() += v,
             _ => {
                 if num.len() % 2 > 0 {
                     *new_stones.entry(2024 * k).or_default() += v;
